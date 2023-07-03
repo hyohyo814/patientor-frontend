@@ -11,6 +11,8 @@ const PatientInfoPage = ({patient}: Prop) => {
   return(
     <div>
       <h3>{patient.name}</h3>
+      <p>ssn: {patient.ssn}</p>
+      <p>occupation: {patient.occupation}</p>
     </div>
   )
 };
