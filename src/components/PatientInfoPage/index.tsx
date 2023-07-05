@@ -1,76 +1,62 @@
-import { Patient, Diagnose, HealthCheckRating, Entry } from '../../types';
-import { Male, Female, Transgender } from '@mui/icons-material';
-import { List, ListItemText, ListItem, Box, Typography } from '@mui/material';
+import { useState } from 'react';
+import axios from 'axios';
+import { Patient, Diagnose, Entry, EntryWithoutId } from '../../types';
+import { Box, Typography, Button } from '@mui/material';
+import { genderIcon } from '../IconTranslator';
+import entryInfo from './TypeChecker';
+import AddEntryModal from '../AddEntryModal';
 
 interface Prop {
   patient: Patient | null | undefined;
   diagnoses: Diagnose[] | null;
 }
 
+export interface EntryInput {
+  entry: Entry;
+  diagnoses: Diagnose[] | null;
+}
+
 const PatientInfoPage = ({ patient, diagnoses }: Prop) => {
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string>();
+
   if (!patient || patient === undefined) {
     return <div>Patient not found</div>;
   }
 
-  const genderIcon = () => {
-    switch (patient.gender) {
-      case 'female':
-        return <Female />;
-      case 'male':
-        return <Male />;
-      case 'other':
-        return <Transgender />;
-      default:
-        return null;
-    }
+  if (!diagnoses || diagnoses === undefined) {
+    return <div>Loading Diagnoses Database...</div>;
+  }
+
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
   };
 
-  const matchDiagnosis = (code: string) => {
-    if (!diagnoses || diagnoses === undefined) {
-      console.log('loading diagnoses...');
-      return null;
+  const submitNewEntry = async (values: EntryWithoutId) => {
+    try {
+      const patient = await patientService.create(values);
+      setPatients(patients.concat(patient));
+      setModalOpen(false);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        if (e?.response?.data && typeof e?.response?.data === 'string') {
+          const message = e.response.data.replace(
+            'Something went wrong. Error: ',
+            ''
+          );
+          console.error(message);
+          setError(message);
+        } else {
+          setError('Unrecognized axios error');
+        }
+      } else {
+        console.error('Unknown error', e);
+        setError('Unknown error');
+      }
     }
-    if (
-      diagnoses !== undefined &&
-      diagnoses.map((c) => c.code).includes(code)
-    ) {
-      return diagnoses.map((v) =>
-        v.code === code ? <Typography key={v.code}>{v.name}</Typography> : null
-      );
-    }
-    return null;
-  };
-
-  const entriesInfo = () => {
-    return patient.entries.map((v) => (
-      <Box
-        key={v.id}
-        sx={{
-          border: 1,
-          borderRadius: 2,
-          mt: 2,
-        }}>
-        <List>
-          <ListItem>
-            <ListItemText sx={{ mb: -2}}>{v.date}</ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText>{v.description}</ListItemText>
-          </ListItem>
-          {v.diagnosisCodes?.map((c, k) => (
-            <ListItem key={k}>
-              <ListItemText sx={{
-                mb: 0,
-                mt: -1,
-                ml: 2,
-                fontStyle: 'italic',
-                fontWeight: 800
-              }}>{matchDiagnosis(c)}</ListItemText>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-    ));
   };
 
   return (
@@ -82,8 +68,8 @@ const PatientInfoPage = ({ patient, diagnoses }: Prop) => {
         <Typography
           variant="h4"
           mb="12px"
-          fontWeight='400'>
-          {patient.name} {genderIcon()}
+          fontWeight="400">
+          {patient.name} {genderIcon(patient)}
         </Typography>
         <Typography variant="body1">ssn: {patient.ssn}</Typography>
         <Typography variant="body1">
@@ -92,11 +78,32 @@ const PatientInfoPage = ({ patient, diagnoses }: Prop) => {
         <Typography
           variant="h6"
           mt="16px"
-          fontWeight='350'>
+          fontWeight="350">
           entries
         </Typography>
       </Box>
-      {entriesInfo()}
+      {patient.entries.map((entry) => (
+        <Box
+          key={entry.id}
+          sx={{
+            border: 1,
+            borderRadius: 2,
+            mt: 2,
+          }}>
+          {entryInfo(entry, diagnoses)}
+        </Box>
+      ))}
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={}
+        error={error}
+        onClose={closeModal}
+      />
+      <Button
+        variant="contained"
+        onClick={() => openModal()}>
+        Add New Patient
+      </Button>
     </div>
   );
 };
