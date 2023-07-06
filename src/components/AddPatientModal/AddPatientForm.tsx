@@ -14,6 +14,8 @@ interface GenderOption{
   label: string;
 }
 
+console.log(Object.values(Gender))
+
 const genderOptions: GenderOption[] = Object.values(Gender).map(v => ({
   value: v, label: v.toString()
 }));

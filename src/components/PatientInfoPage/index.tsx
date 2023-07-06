@@ -5,6 +5,7 @@ import { Box, Typography, Button } from '@mui/material';
 import { genderIcon } from '../IconTranslator';
 import entryInfo from './TypeChecker';
 import AddEntryModal from '../AddEntryModal';
+import patientService from '../../services/patients';
 
 interface Prop {
   patient: Patient | null | undefined;
@@ -37,8 +38,8 @@ const PatientInfoPage = ({ patient, diagnoses }: Prop) => {
 
   const submitNewEntry = async (values: EntryWithoutId) => {
     try {
-      const patient = await patientService.create(values);
-      setPatients(patients.concat(patient));
+      const patientTar = await patientService.addEntry(patient.id, values);
+      console.log(patientTar);
       setModalOpen(false);
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
@@ -95,14 +96,17 @@ const PatientInfoPage = ({ patient, diagnoses }: Prop) => {
       ))}
       <AddEntryModal
         modalOpen={modalOpen}
-        onSubmit={}
+        onSubmit={submitNewEntry}
         error={error}
         onClose={closeModal}
       />
       <Button
+        sx={{
+          mt: '14px',
+        }}
         variant="contained"
         onClick={() => openModal()}>
-        Add New Patient
+        Add New Entry
       </Button>
     </div>
   );
