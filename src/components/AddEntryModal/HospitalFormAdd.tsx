@@ -16,10 +16,10 @@ const HospitalFormAdd = ({ setDate, setCriteria }: Props) => {
         sx={{
           mb: '14px',
         }}
-        label="Date"
+        type='date'
         placeholder="YYYY-MM-DD"
         fullWidth
-        onChange={({ target }) => setDate(target.value)}
+        onChange={({target}) => setDate(target.value)}
       />
       <TextField
         sx={{

@@ -24,12 +24,12 @@ const OccHealthcareFormAdd = ({
         fullWidth
         onChange={({ target }) => setEmployerName(target.value)}
       />
-      <InputLabel>Sick Leave</InputLabel>
+      <InputLabel>Sick Leave Period</InputLabel>
       <TextField
         sx={{
           mb: '14px',
         }}
-        label="Start Date"
+        type='date'
         placeholder="YYYY-MM-DD"
         fullWidth
         onChange={({ target }) => setStartDate(target.value)}
@@ -38,7 +38,7 @@ const OccHealthcareFormAdd = ({
         sx={{
           mb: '14px',
         }}
-        label="End Date"
+        type='date'
         placeholder="YYYY-MM-DD"
         fullWidth
         onChange={({ target }) => setEndDate(target.value)}

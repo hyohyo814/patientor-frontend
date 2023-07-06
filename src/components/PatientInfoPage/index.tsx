@@ -99,6 +99,7 @@ const PatientInfoPage = ({ patient, diagnoses }: Prop) => {
         onSubmit={submitNewEntry}
         error={error}
         onClose={closeModal}
+        diagnoses={diagnoses}
       />
       <Button
         sx={{

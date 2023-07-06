@@ -12,7 +12,12 @@ import {
   SelectChangeEvent,
 } from '@mui/material';
 
-import { EntryWithoutId, EntryType, HealthCheckRating } from '../../types';
+import {
+  EntryWithoutId,
+  EntryType,
+  HealthCheckRating,
+  Diagnose,
+} from '../../types';
 
 import HospitalFormAdd from './HospitalFormAdd';
 import HealthCheckFormAdd from './HealthCheckFormAdd';
@@ -21,6 +26,7 @@ import OccHealthcareFormAdd from './OccHealthcareFormAdd';
 interface Props {
   onCancel: () => void;
   onSubmit: (values: EntryWithoutId) => void;
+  diagnosesList: Diagnose[];
 }
 
 interface TypeOption {
@@ -33,7 +39,7 @@ const typeOptions: TypeOption[] = Object.values(EntryType).map((v) => ({
   label: v.toString(),
 }));
 
-const AddPatientForm = ({ onCancel, onSubmit }: Props) => {
+const AddPatientForm = ({ onCancel, onSubmit, diagnosesList }: Props) => {
   const [description, setDescription] = useState('');
   const [specialist, setSpecialist] = useState('');
   const [date, setDate] = useState('');
@@ -128,6 +134,7 @@ const AddPatientForm = ({ onCancel, onSubmit }: Props) => {
   const addDiagnosis = () => {
     console.log(diagnosis);
     setDiagnoses(diagnoses.concat(diagnosis));
+    setDiagnosis('');
   };
 
   return (
@@ -150,11 +157,12 @@ const AddPatientForm = ({ onCancel, onSubmit }: Props) => {
             </MenuItem>
           ))}
         </Select>
+        <InputLabel>Date</InputLabel>
         <TextField
           sx={{
             mb: '14px',
           }}
-          label="Date"
+          type='date'
           placeholder="YYYY-MM-DD"
           fullWidth
           value={date}
@@ -178,27 +186,32 @@ const AddPatientForm = ({ onCancel, onSubmit }: Props) => {
           value={description}
           onChange={({ target }) => setDescription(target.value)}
         />
-        <TextField
+        <InputLabel>Diagnosis</InputLabel>
+        <Select
           sx={{
             mb: '14px',
           }}
-          label="Diagnosis"
           fullWidth
           value={diagnosis}
           onChange={({ target }) => setDiagnosis(target.value)}
-          InputProps={{
-            endAdornment: (
-              <Button
-                style={{
-                  float: 'right',
-                }}
-                onClick={addDiagnosis}
-                variant="contained">
-                Add
-              </Button>
-            ),
-          }}
-        />
+          endAdornment={
+            <Button
+              style={{
+                float: 'right',
+              }}
+              onClick={addDiagnosis}
+              variant="contained">
+              Add
+            </Button>
+          }>
+          {diagnosesList.map((v) => (
+            <MenuItem
+              key={v.code}
+              value={v.code}>
+              {v.name}
+            </MenuItem>
+          ))}
+        </Select>
         <Grid>
           {diagnoses.length !== 0 ? (
             <Grid
