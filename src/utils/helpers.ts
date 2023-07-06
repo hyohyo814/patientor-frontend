@@ -1,3 +1,3 @@
-export const assertNever = (obj: any): never => {
+export const assertNever = (): never => {
   throw new Error('An error has occurred');
-}
+};

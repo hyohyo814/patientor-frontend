@@ -31,7 +31,7 @@ const entryInfo = (entry: Entry, diagnoses: Diagnose[]) => {
         />
       );
     default:
-      return assertNever(entry);
+      return assertNever();
   }
 };
 
